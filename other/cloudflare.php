@@ -31,7 +31,7 @@ foreach ($domain as $id => $v_domain) {
     $url = "https://api.cloudflare.com/client/v4/zones";
     $post = array(
         "name" => trim($v_domain),
-        "jump_start" => true
+        "jump_start" => true  // true 自动尝试获取现有的DNS解析记录
     );
 
     $post = json_encode($post);
