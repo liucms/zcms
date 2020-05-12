@@ -1,0 +1,28 @@
+nginx 502 Bad Gateway 错误解决办法
+
+设置 php.ini
+memory_limit = 512M
+max_execution_time = 300
+
+设置 php-fpm.conf
+max_children = 128 // max_children是PHP-FPM Pool 最大的子进程数,一个PHP请求占用内存10M-40M比如说，1G设置64 , 2G 设置128 这个根据实际情况自行调整
+max_requests = 1024 // max_requests 该参数指明了每个max_children最多处理多少个请求后便会被关闭， 默认值为unlimited（默认为1024）
+request_terminate_timeout = 100
+
+查看当前的PHP FastCGI进程数是否够用的命令
+netstat  -anpo |grep "php-cgi" | wc -l
+
+设置 nginx.conf
+http {
+client_header_buffer_size 32k;
+keepalive_timeout 60;
+fastcgi_connect_timeout 300;
+fastcgi_send_timeout 300;
+fastcgi_read_timeout 300;
+fastcgi_buffer_size 64k;}
+
+调高调高Linux内核打开文件数量
+可以使用这些命令(必须是root帐号)
+echo 'ulimit -HSn 65536'>> /etc/profile
+echo 'ulimit -HSn 65536'>> /etc/rc.local
+source /etc/profile
