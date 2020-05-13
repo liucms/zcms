@@ -42,7 +42,7 @@ class RedisSess {
         // 下面这行代码可以防止使用对象作为会话保存管理器时可能引发的非预期行为
         register_shutdown_function('session_write_close');
 
-        session_set_cookie_params($usertime, "/", $sedomain, FALSE, TRUE);
+        session_set_cookie_params($usertime, "/", $sedomain, TRUE, TRUE);
         session_name($sename);
         session_start();
     }
