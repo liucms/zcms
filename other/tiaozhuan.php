@@ -99,7 +99,8 @@ if(!empty($_GET['d'])){
 if(!empty($_GET['igfw'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['igfw'], $id);
     $igfw = getTxt($id[0]);
-    $get_rand = str_rand();
+    $srt_range = range("A","Z");
+    $get_rand = $srt_range[array_rand($srt_range)].str_rand();
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
             exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
