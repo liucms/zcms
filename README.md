@@ -1,3 +1,5 @@
+liucms@
+
 cloudflare批量添加域名及添加dns解析记录php脚本
 
 原理： 程序会循环读取domain.txt的每一行通过cloudflare接口添加，并将record.txt中的记录每一个域名对应一行。 接口参考：https://api.cloudflare.com/
