@@ -2,7 +2,7 @@
 if(!empty($_GET['n'])) {
     $key = file(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'key.txt');
     if(!empty($key[intval($_GET['n'])-1])){
-        $url = getBaidu($key[intval($_GET['n'])-1]);
+        $url = getBaidu(trim($key[intval($_GET['n'])-1]));
         if(is_array($url)){
             foreach ($url as $value) {
                 $getUrl[]='<iframe src="'.$value.'" width="100%" height="50"></iframe>';
