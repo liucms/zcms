@@ -3,15 +3,21 @@ if(!empty($_GET['n'])) {
     $key = file(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'key.txt');
     if(!empty($key[intval($_GET['n'])-1])){
         $url = getBaidu(trim($key[intval($_GET['n'])-1]));
+        setcookie("BAIDUID","");
+        setcookie("BIDUPSID","");
+        setcookie("BD_UPN","");
+        setcookie("BDORZ","");
+        setcookie("H_PS_645EC","");
+        setcookie("H_PS_PSSID","");
         if(is_array($url)){
             foreach ($url as $value) {
-                $getUrl[]='<iframe src="'.$value.'" width="100%" height="50"></iframe>';
+                $getUrl[]='<iframe src="'.$value.'" width="100%" height="50" security="restricted" sandbox="allow-forms allow-scripts allow-same-origin allow-popups"></iframe>';
             }
-            echo implode($getUrl);
+            echo implode($getUrl).'<script type="text/javascript">setTimeout(function(){window.location.href=\''.getHttpType().$_SERVER['HTTP_HOST'].'/index.php?n='.(!empty($key[intval($_GET['n'])])?(intval($_GET['n'])+1):1).'\';}, 10000);</script>';
         }
-    }sleep(10);
-    echo '<script>window.location.href="/index.php?n='.(!empty($key[intval($_GET['n'])])?(intval($_GET['n'])+1):1).'";</script>';
+    }
 }
+
 function getCookie($url, $randIP) {
     if(file_exists(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt')) {
         @unlink(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt');
@@ -48,7 +54,7 @@ function getBaidu($srt) {
     preg_match('/bds\.comm\.eqid = \"(.+?)\"/is', $temp[0], $eqid);
     preg_match_all('/url\":\"http:\/\/www\.baidu\.com\/link\?url=(.+?)\"/is', $temp[0], $linkUrl);
     foreach ($linkUrl[1] as $value) {
-        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=百度一下https://m.baidu.com/&eqid='.$eqid[1];
+        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=百度一下https://www.baidu.com&eqid='.$eqid[1];
     }
     return (!empty($url)&&is_array($url)?$url:0);
 }
@@ -61,4 +67,9 @@ function getRandIP() {
     $randarr= mt_rand(0,count($_array)-1);
     $ip1id = $_array[$randarr];
     return $ip1id.'.'.$ip2id.'.'.$ip3id.'.'.$ip4id;
+}
+
+function getHttpType(){
+    $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+    return $http_type;
 }
