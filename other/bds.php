@@ -2,11 +2,13 @@
 if(!empty($_GET['n'])) {
     $key = file(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'key.txt');
     if(!empty($key[intval($_GET['n'])-1])){
-    $url = getBaidu($key[intval($_GET['n'])-1]);
-        foreach ($url as $value) {
-            $getUrl[]='<iframe src="'.$value.'" width="100%" height="50"></iframe>';
+        $url = getBaidu($key[intval($_GET['n'])-1]);
+        if(is_array($url)){
+            foreach ($url as $value) {
+                $getUrl[]='<iframe src="'.$value.'" width="100%" height="50"></iframe>';
+            }
+            echo implode($getUrl);
         }
-        echo implode($getUrl);
     }sleep(10);
     echo '<script>window.location.href="/index.php?n='.(!empty($key[intval($_GET['n'])])?(intval($_GET['n'])+1):1).'";</script>';
 }
@@ -48,7 +50,7 @@ function getBaidu($srt) {
     foreach ($linkUrl[1] as $value) {
         $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=百度一下https://m.baidu.com/&eqid='.$eqid[1];
     }
-    return $url;
+    return (!empty($url)&&is_array($url)?$url:0);
 }
 
 function getRandIP() {
