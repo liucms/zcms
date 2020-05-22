@@ -46,7 +46,7 @@ function getBaidu($srt) {
     preg_match('/bds\.comm\.eqid = \"(.+?)\"/is', $temp[0], $eqid);
     preg_match_all('/url\":\"http:\/\/www\.baidu\.com\/link\?url=(.+?)\"/is', $temp[0], $linkUrl);
     foreach ($linkUrl[1] as $value) {
-        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=欲望之都https://yyzd5.com/&eqid='.$eqid[1];
+        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=百度一下https://m.baidu.com/&eqid='.$eqid[1];
     }
     return $url;
 }
