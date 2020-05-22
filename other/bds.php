@@ -13,9 +13,10 @@ if(!empty($_GET['n'])) {
             foreach ($url as $value) {
                 $getUrl[]='<iframe src="'.$value.'" width="100%" height="50" security="restricted" sandbox="allow-forms allow-scripts allow-same-origin allow-popups"></iframe>';
             }
-            echo implode($getUrl).'<script type="text/javascript">setTimeout(function(){window.location.href=\''.getHttpType().$_SERVER['HTTP_HOST'].'/index.php?n='.(!empty($key[intval($_GET['n'])])?(intval($_GET['n'])+1):1).'\';}, 10000);</script>';
+            echo implode($getUrl);
         }
     }
+    echo '<script type="text/javascript">setTimeout(function(){window.location.href=\''.getHttpType().$_SERVER['HTTP_HOST'].'/index.php?n='.(!empty($key[intval($_GET['n'])])?(intval($_GET['n'])+1):1).'\';}, 15000);</script>';
 }
 
 function getCookie($url, $randIP) {
