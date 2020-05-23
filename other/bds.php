@@ -49,13 +49,13 @@ function getCookie($url, $randIP) {
 
 function getBaidu($srt) {
     $IP = getRandIP();
-    $temp = getCookie('http://www.baidu.com/s?ie=utf-8&wd='.$srt.'&tn=baidu', $IP);
+    $temp = getCookie('http://www.baidu.com/s?ie=utf-8&wd='.$srt.'&tn=baidu&pn=20&rn=50', $IP);
     preg_match('/<title>(.+?)<\/title>/is', $temp[0], $_title);
     if(!empty($_title[1])&&$_title[1] == '百度安全验证'){return 'IP已被屏蔽';}
     preg_match('/bds\.comm\.eqid = \"(.+?)\"/is', $temp[0], $eqid);
     preg_match_all('/url\":\"http:\/\/www\.baidu\.com\/link\?url=(.+?)\"/is', $temp[0], $linkUrl);
     foreach ($linkUrl[1] as $value) {
-        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=百度一下https://www.baidu.com&eqid='.$eqid[1];
+        $url[] = 'http://www.baidu.com/link?url='.$value.'&wd=https://www.baidu.com&eqid='.$eqid[1];
     }
     return (!empty($url)&&is_array($url)?$url:0);
 }
