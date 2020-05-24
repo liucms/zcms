@@ -130,10 +130,10 @@ class Functions extends app\Engine {
     // 修复 HTML 标签闭合问题（检查并补全）
     public function fixHtml($srt){
         $srt = preg_replace('/<[^>]*$/','',$srt);
-        preg_match_all('/<([a-z]+)(?: .*)?(?<![/|/ ])>/iU', $srt, $result);
+        preg_match_all('/<([a-z]+)(?: .*)?(?<![\/|\/ ])>/iU', $srt, $result);
         if($result){
             $opentags = $result[1];
-            preg_match_all('/</([a-z]+)>/iU', $srt, $result);
+            preg_match_all('/<\/([a-z]+)>/iU', $srt, $result);
             if($result){
                 $closetags = $result[1];
                 $len_opened = count($opentags);
