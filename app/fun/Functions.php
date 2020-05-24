@@ -127,4 +127,32 @@ class Functions extends app\Engine {
         return $decrypted;
     }
 
+    // 修复 HTML 标签闭合问题（检查并补全）
+    public function fixHtml($srt){
+        $srt = preg_replace('/<[^>]*$/','',$srt);
+        preg_match_all('/<([a-z]+)(?: .*)?(?<![/|/ ])>/iU', $srt, $result);
+        if($result){
+            $opentags = $result[1];
+            preg_match_all('/</([a-z]+)>/iU', $srt, $result);
+            if($result){
+                $closetags = $result[1];
+                $len_opened = count($opentags);
+                if (count($closetags) == $len_opened) {
+                    return $srt;  //没有未关闭标签
+                }
+                $opentags = array_reverse($opentags);
+                $sc = array('br','input','img','hr','meta','link');  //跳过这些标签
+                for ($i=0; $i < $len_opened; $i++) {
+                    $ot = strtolower($opentags[$i]);
+                    if (!in_array($opentags[$i], $closetags) && !in_array($ot,$sc)) {
+                        $srt .= '</'.$opentags[$i].'>';  //补齐标签
+                    } else {
+                        unset($closetags[array_search($opentags[$i], $closetags)]);
+                    }
+                }
+            }
+        }
+        return $srt;
+    }
+
 }
