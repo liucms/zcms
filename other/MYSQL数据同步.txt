@@ -24,12 +24,12 @@ ALTER TABLE sakila.actor DISCARD TABLESPACE;
 
 复制数据文件
 
-cp /backup_directory/actor.ibd path/to/mysql-5.6/data/sakila/
+cp /backup_directory/actor.ibd path/to/mariadb/data/sakila/
 
 修改文件所有者和权限
 
-chown -R mysql:mysql path/to/mysql-5.6/data/sakila/actor.ibd
-chmod -R 0755 path/to/mysql-5.6/data/sakila/actor.ibd
+chown -R mariadb:mariadb path/to/mariadb/data/sakila/actor.ibd
+chmod -R 0660 path/to/mariadb/data/sakila/actor.ibd
 
 重新将其导入表空间
 
