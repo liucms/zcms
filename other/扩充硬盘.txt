@@ -1,0 +1,239 @@
+加一块新硬盘
+
+[root@server-10 ~]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+devtmpfs                 990M     0  990M   0% /dev
+tmpfs                   1001M     0 1001M   0% /dev/shm
+tmpfs                   1001M   57M  944M   6% /run
+tmpfs                   1001M     0 1001M   0% /sys/fs/cgroup
+/dev/mapper/centos-root   27G  5.8G   22G  22% /　　　　// 扩容后，再来看该项，作对比
+/dev/sda1               1014M  154M  861M  16% /boot
+tmpfs                    201M     0  201M   0% /run/user/0
+
+[root@server-10 ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   30G  0 disk 
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   29G  0 part 
+  ├─centos-root 253:0    0   27G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0   10G  0 disk 　　　　// 新加的硬盘命名为sdb，已经存在，但是还没分区无法给系统使用
+sr0              11:0    1 1024M  0 rom
+
+给新硬盘创建分区（此处就默认创建一个分区）
+
+[root@server-10 ~]# fdisk /dev/sdb
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+
+Command (m for help): n　　// 添加新分区
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 　　// 回车，默认p，主分区
+Using default response p
+Partition number (1-4, default 1): 　　// 回车，默认1
+First sector (2048-20971519, default 2048): 　　// 回车，默认起始位置
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-20971519, default 20971519): 　　// 回车，默认最后位置
+Using default value 20971519
+Partition 1 of type Linux and of size 10 GiB is set
+
+Command (m for help): t　　// 更改分区格式
+Selected partition 1
+Hex code (type L to list all codes): L　　// 查看可选项
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden C:  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      40  Venix 80286     85  Linux extended  c7  Syrinx         
+ 5  Extended        41  PPC PReP Boot   86  NTFS volume set da  Non-FS data    
+ 6  FAT16           42  SFS             87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility   
+ 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 52  CP/M            a0  IBM Thinkpad hi eb  BeOS fs        
+ e  W95 FAT16 (LBA) 53  OnTrack DM6 Aux a5  FreeBSD         ee  GPT            
+ f  W95 Ext'd (LBA) 54  OnTrackDM6      a6  OpenBSD         ef  EFI (FAT-12/16/
+10  OPUS            55  EZ-Drive        a7  NeXTSTEP        f0  Linux/PA-RISC b
+11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f1  SpeedStor      
+12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f4  SpeedStor      
+14  Hidden FAT16 <3 61  SpeedStor       ab  Darwin boot     f2  DOS secondary  
+16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      fb  VMware VMFS    
+17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fc  VMware VMKCORE 
+18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fd  Linux raid auto
+1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fe  LANstep        
+1c  Hidden W95 FAT3 75  PC/IX           be  Solaris boot    ff  BBT            
+1e  Hidden W95 FAT1 80  Old Minix      
+Hex code (type L to list all codes): 8e　　// 更改分区格式为LVM 大于2T选择 ee分区格式GPT
+Changed type of partition 'Linux' to 'Linux LVM'
+
+Command (m for help): p　　// 打印，查看改好的分区（blocks为分区大小 单位为kb）
+
+Disk /dev/sdb: 10.7 GB, 10737418240 bytes, 20971520 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0xa6e3dd82
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048    20971519    10484736   8e  Linux LVM
+
+Command (m for help): w　　// 保存
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+再次查看分区，只是分区好，没挂载没加入系统根，无法使用
+
+[root@server-10 ~]# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   30G  0 disk 
+├─sda1            8:1    0    1G  0 part /boot
+└─sda2            8:2    0   29G  0 part 
+  ├─centos-root 253:0    0   27G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0   10G  0 disk 
+└─sdb1            8:17   0   10G  0 part 
+sr0              11:0    1 1024M  0 rom
+
+把新的分区转换为物理卷
+
+[root@server-10 ~]# pvcreate /dev/sdb1
+  Physical volume "/dev/sdb1" successfully created.
+
+查看现有的卷组名，这里为centos
+
+[root@server-10 ~]# vgdisplay 
+  --- Volume group ---
+  VG Name               centos　　// 这是Centos系统下默认的VG Name,RHEL系统显示为rhel
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               <29.00 GiB　　//留意该值的变化
+  PE Size               4.00 MiB
+  Total PE              7423
+  Alloc PE / Size       7422 / 28.99 GiB
+  Free  PE / Size       1 / 4.00 MiB
+  VG UUID               RNpAgN-PLQm-M4vp-E37i-fhhp-mr2z-faLm3A
+
+把转换号的物理卷并到vg（卷组）中
+
+[root@server-10 ~]# vgextend centos /dev/sdb1
+  Volume group "centos" successfully extended
+
+[root@server-10 ~]# vgdisplay 
+  --- Volume group ---
+  VG Name               centos
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  4
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               38.99 GiB　　//对比，变大了约10G
+  PE Size               4.00 MiB
+  Total PE              9982
+  Alloc PE / Size       7422 / 28.99 GiB
+  Free  PE / Size       2560 / 10.00 GiB
+  VG UUID               RNpAgN-PLQm-M4vp-E37i-fhhp-mr2z-faLm3A
+
+查看逻辑卷，默认系统分了2个，选择对应逻辑卷路径
+
+[root@server-10 ~]# lvdisplay 
+  --- Logical volume ---
+  LV Path                /dev/centos/swap　　//系统默认分了2G给swap,不用管
+  LV Name                swap
+  VG Name                centos
+  LV UUID                w8yxWk-Qrth-x16P-jVg3-1haX-lZUH-0r1SkV
+  LV Write Access        read/write
+  LV Creation host, time localhost.localdomain, 2018-03-21 02:10:16 +0800
+  LV Status              available
+  # open                 2
+  LV Size                2.00 GiB
+  Current LE             512
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:1
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/root　　// 后面扩展该逻辑卷，记住该路径
+  LV Name                root
+  VG Name                centos
+  LV UUID                ECEWl4-0AEW-W1Tn-acE2-GLpe-NxeD-v16tGb
+  LV Write Access        read/write
+  LV Creation host, time localhost.localdomain, 2018-03-21 02:10:16 +0800
+  LV Status              available
+  # open                 1
+  LV Size                26.99 GiB
+  Current LE             6910
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     8192
+  Block device           253:0
+
+给逻辑卷扩展空间
+
+[root@server-10 ~]# lvextend /dev/centos/root /dev/sdb1
+  Size of logical volume centos/root changed from 26.99 GiB (6910 extents) to <36.99 GiB (9469 extents).
+  Logical volume centos/root successfully resized.
+
+写入文件系统，使扩容生效
+
+lvextend -l +100%FREE /dev/vg/root
+
+[root@server-10 ~]# xfs_growfs /dev/mapper/centos-root 
+meta-data=/dev/mapper/centos-root isize=512    agcount=4, agsize=1768960 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=7075840, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=3455, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 7075840 to 9696256
+
+如果是ext系统，可以使用resize2fs命令替换xfs_growfs命令。
+
+检查扩容效果
+
+[root@server-10 ~]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+devtmpfs                 990M     0  990M   0% /dev
+tmpfs                   1001M     0 1001M   0% /dev/shm
+tmpfs                   1001M   57M  944M   6% /run
+tmpfs                   1001M     0 1001M   0% /sys/fs/cgroup
+/dev/mapper/centos-root   37G  5.8G   32G  16% /
+/dev/sda1               1014M  154M  861M  16% /boot
+tmpfs                    201M     0  201M   0% /run/user/0
+
+
+
+
+
